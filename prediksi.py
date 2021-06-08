@@ -5,7 +5,7 @@ import numpy as np
 
 input_path = r'E:\bangkit\serba serbi capston\back-API-try-to-fix\skin_deaseas.jpeg'  # Path image yang ingin diprediksi
 
-model_path = r'E:\bangkit\serba serbi capston\capstone_saved_model'  # Path untuk model saved_model.pb
+model_path = r'E:\bangkit\serba serbi capston\v1.2'  # Path untuk model saved_model.pb
 model = tf.saved_model.load(model_path)
 
 class_list = ['Acne', 'Dermatitis', 'Eczema', 'Fungal Infections',
