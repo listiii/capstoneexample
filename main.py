@@ -1,4 +1,8 @@
 from flask import Flask, jsonify, request
+import os
+import numpy as np
+import tensorflow as tf
+import cv2
 
 class_list = ['Acne', 'Dermatitis', 'Eczema', 'Fungal Infections',
               'Hair Diseases', 'Nail Fungus', 'Psoriaris']
