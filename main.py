@@ -1,42 +1,27 @@
-from flask import Flask, jsonify, request
 import os
+from flask import Flask, jsonify, request
 import numpy as np
-import tensorflow as tf
-import cv2
+import keras
+from google.colab import files
+from keras.preprocessing import image
 
-class_list = ['Acne', 'Dermatitis', 'Eczema', 'Fungal Infections',
-              'Hair Diseases', 'Nail Fungus', 'Psoriaris']
+uploaded = files.upload()
 
-img_height, img_width = 118, 180
+for fn in uploaded.keys():
 
+    # predicting images
+    path = '/tmp/test_image/test-001.png'
+    img = image.load_img(path, target_size=(300, 300))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
 
-def prepare_image(path):
-    img = cv2.imread(path)
-    img = cv2.resize(img, (img_width, img_height))
-    img = img.astype('float32') / 255
-    img = np.expand_dims(img, axis=0)
-    return img
-
-
-def predict_result(img):  # Lakukan prediksi
-    preds = model(img)
-    probs = tf.keras.backend.get_value(preds)
-    sorting = (-probs).argsort()  # Sorting
-    sorted_ = sorting[0][:3]
-    predict_json = {'predict1': (probs[0][sorted_[0]]) * 100,
-                    'predict2': (probs[0][sorted_[1]]) * 100,
-                    'predict3': (probs[0][sorted_[2]]) * 100,
-                    'label1': class_list[sorted_[0]],
-                    'label2': class_list[sorted_[1]],
-                    'label3': class_list[sorted_[2]]}
-    # print(predict_json)
-    return (predict_json)
-    # for value in sorted_:
-    #     predicted_label = class_list[value]
-    #     prob = (probs[0][value]) * 100
-    #     prob = "%.2f" % round(prob,2)
-    #     return("Kemungkinan %s%% penyakit %s" % (prob, predicted_label))
-
+    images = np.vstack([x])
+    classes = model.predict(images, batch_size=4)
+    print(classes[0])
+    if classes[0] > 0.5:
+        print(fn + " is a Front")
+    else:
+        print(fn + " is a Back")
 
 app = Flask(__name__)
 
@@ -50,7 +35,7 @@ def infer_image():
 
     if not file:
         return
-    path_dir = os.path.join(os.getcwd(), 'skindumpfile.jpeg')
+    path_dir = os.path.join(os.getcwd(), '')
     file.save(path_dir)
 
     img = prepare_image(path_dir)
@@ -60,8 +45,8 @@ def infer_image():
 
 @app.route('/', methods=['GET'])
 def index():
-    return 'Deteksi lampu sein hahahaha'
+    return 'Detection'
 
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True, host='localhost', use_reloader=True)
+    app.run(debug=True, host='0.0.0.0')

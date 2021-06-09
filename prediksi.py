@@ -1,28 +1,34 @@
 # Prediksi
 import tensorflow as tf
-import cv2
-import numpy as np
+input_path = r'E:'  # Path image yang ingin diprediksi
 
-input_path = r'E:\bangkit\serba serbi capston\back-API-try-to-fix\skin_deaseas.jpeg'  # Path image yang ingin diprediksi
-
-model_path = r'E:\bangkit\serba serbi capston\v1.2'  # Path untuk model saved_model.pb
+model_path = r''  # Path untuk model saved_model.pb
 model = tf.saved_model.load(model_path)
 
-class_list = ['Acne', 'Dermatitis', 'Eczema', 'Fungal Infections',
-              'Hair Diseases', 'Nail Fungus', 'Psoriaris']
 
-# Olah gambar input
-img_height, img_width = 118, 180
-image = cv2.imread(input_path)
-image = cv2.resize(image, (img_width, img_height))
-image = image.astype('float32') / 255
-image = np.expand_dims(image, axis=0)
 
-preds = model(image)  # Lakukan prediksi
-print(preds)
-probs = tf.keras.backend.get_value(preds)
-sorting = (-probs).argsort()  # Sorting
-sorted_ = sorting[0][:3]
+import numpy as np
+import keras
+from google.colab import files
+from keras.preprocessing import image
+
+uploaded = files.upload()
+
+for fn in uploaded.keys():
+
+    # predicting images
+    path = '/tmp/test_image/test-001.png'
+    img = image.load_img(path, target_size=(300, 300))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+
+    images = np.vstack([x])
+    classes = model.predict(images, batch_size=4)
+    print(classes[0])
+    if classes[0] > 0.5:
+        print(fn + " is a Front")
+    else:
+        print(fn + " is a Back")
 
 # Print hasil prediksi
 print("Hasil Prediksi:")
